@@ -1,16 +1,34 @@
 import { useState } from "react";
 import { Plus, Layout, Search, Calendar, X } from "lucide-react";
-import { TaskColumn } from "./types/task";
+import { Task, TaskStatusOptions } from "./types/task";
 import { TaskForm } from "./components/TaskForm";
-
-const taskColumns: TaskColumn[] = [
-  { id: "todo", title: "To Do" },
-  { id: "in-progress", title: "In Progress" },
-  { id: "done", title: "Done" },
-];
+import { useTaskStore } from "./store/useTaskStore";
+import { TaskColumn as TaskColumnComponent } from "./components/TaskColumn";
 
 function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | undefined>();
+  const { tasks, addTask, updateTask } = useTaskStore();
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingTask(undefined);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsFormOpen(true);
+  };
+
+  const handleSubmitTask = (taskData: Task) => {
+    console.log("taskData", taskData);
+    if (editingTask) {
+      updateTask(editingTask.id, taskData);
+    } else {
+      addTask(taskData);
+    }
+    handleCloseForm();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -32,24 +50,23 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <p>Column 1</p>
-          </div>
-
-          <div>
-            <p>Column 2</p>
-          </div>
-
-          <div>
-            <p>Column 3</p>
-          </div>
+          {TaskStatusOptions.map((column) => (
+            <TaskColumnComponent
+              key={column.id}
+              column={column}
+              tasks={tasks.filter((task) => task.status === column.id)}
+              onEditTask={handleEditTask}
+            />
+          ))}
         </div>
 
-        {
-          isFormOpen && (
-            <TaskForm />
-          )
-        }
+        {isFormOpen && (
+          <TaskForm
+            task={editingTask}
+            onClose={handleCloseForm}
+            submit={handleSubmitTask}
+          />
+        )}
       </div>
     </div>
   );
