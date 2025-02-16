@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "./form/FormInput";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { taskSchema } from "@/lib/validation/taskSchema";
+import { taskSchema, TaskSchemaVType } from "@/lib/validation/taskSchema";
 import { FormTextAera } from "./form/FormTextArea";
 import { FormDatePicker } from "./form/FormDatePicker";
 import { FormSelect } from "./form/FormSelect";
@@ -24,8 +24,8 @@ export function TaskForm({ task, submit, onClose }: TaskFormProps) {
 
   const { handleSubmit, setValue } = methods;
 
-  const onSubmit = (data: any) => {
-    submit(data);
+  const onSubmit = (data: TaskSchemaVType) => {
+    submit(data as Task);
   };
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export function TaskForm({ task, submit, onClose }: TaskFormProps) {
               label="Select Status"
               placeholder="Select Status"
               options={TaskStatusOptions}
-              value={task ? task?.status : ''}
+              value={task ? task?.status : ""}
             />
 
             <Button type="submit">{task ? "Update" : "Create"}</Button>

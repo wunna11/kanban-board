@@ -8,7 +8,7 @@ export interface TaskColumn {
 export interface Task {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   status: TaskStatus;
   startDate?: string | Date;
   endDate?: string | Date;
