@@ -89,12 +89,16 @@ function App() {
   };
 
   const handleSubmitTask = (taskData: Task) => {
-    if (editingTask) {
-      updateTask(editingTask.id, taskData);
-    } else {
-      addTask(taskData);
+    try {
+      if (editingTask) {
+        updateTask(editingTask.id, taskData);
+      } else {
+        addTask(taskData);
+      }
+      handleCloseForm();
+    } catch (error) {
+      alert("Something went wrong while saving the task. Please try again.");
     }
-    handleCloseForm();
   };
 
   const handleClearTask = () => {
