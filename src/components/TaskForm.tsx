@@ -84,8 +84,12 @@ export function TaskForm({ task, submit, onClose }: TaskFormProps) {
               options={TaskStatusOptions}
               value={task ? task?.status : ""}
             />
-
-            <Button type="submit">{task ? "Update" : "Create"}</Button>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="button" onClick={onClose} variant="outline">
+                Cancel
+              </Button>
+              <Button type="submit">{task ? "Update" : "Create"}</Button>
+            </div>
           </form>
         </FormProvider>
       </div>

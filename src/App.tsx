@@ -34,7 +34,7 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [date, setDate] = useState<DateRange | null>(null);
+  const [date, setDate] = useState<DateRange | undefined>();
   const [filteredTasks, setFilteredTasks] = useState<Task[] | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<TaskStatus | "all">(
     "all"
@@ -97,21 +97,34 @@ function App() {
     handleCloseForm();
   };
 
+  const handleClearTask = () => {
+    setDate(undefined);
+    setSelectedStatus("all");
+  };
+
   useEffect(() => {
     let filtered = tasks;
-    if (date) {
+    if (date?.from && date?.to) {
       filtered = filtered.filter((task) => {
-        const taskStartDate = parseISO(task.startDate as string);
-        const taskEndDate = parseISO(task.endDate as string);
+        if (!task.startDate || !task.endDate) return false;
+
+        const taskStartDate =
+          typeof task.startDate === "string"
+            ? parseISO(task?.startDate)
+            : task?.startDate;
+        const taskEndDate =
+          typeof task.endDate === "string"
+            ? parseISO(task?.endDate)
+            : task?.endDate;
 
         return (
           isWithinInterval(taskStartDate, {
-            start: date.from as Date,
-            end: date.to as Date,
+            start: date?.from as Date,
+            end: date?.to as Date,
           }) ||
           isWithinInterval(taskEndDate, {
-            start: date.from as Date,
-            end: date.to as Date,
+            start: date?.from as Date,
+            end: date?.to as Date,
           })
         );
       });
@@ -123,8 +136,6 @@ function App() {
 
     setFilteredTasks(filtered);
   }, [date, selectedStatus, tasks]);
-
-  console.log("filterRes", tasks);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -177,7 +188,7 @@ function App() {
                   initialFocus
                   mode="range"
                   defaultMonth={date?.from}
-                  selected={date}
+                  selected={date as DateRange}
                   onSelect={setDate}
                   numberOfMonths={2}
                 />
@@ -185,12 +196,19 @@ function App() {
             </Popover>
 
             <Select
+              value={selectedStatus}
               onValueChange={(value) =>
                 setSelectedStatus(value as TaskStatus | "all")
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select Status" />
+                <SelectValue>
+                  {selectedStatus === "all"
+                    ? "Select Status"
+                    : TaskStatusOptions.find(
+                        (task) => task.id === selectedStatus
+                      )?.title}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
@@ -209,9 +227,7 @@ function App() {
                 Showing {filteredTasks?.length} of {tasks?.length} tasks
               </span>
               <button
-                onClick={() => {
-                  setDate(null);
-                }}
+                onClick={handleClearTask}
                 className="text-indigo-600 hover:text-indigo-700 font-medium"
               >
                 Clear Filters
