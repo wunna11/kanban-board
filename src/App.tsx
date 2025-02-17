@@ -144,7 +144,7 @@ function App() {
           <div className="flex items-center gap-3">
             <Layout className="w-8 h-8 text-indigo-600" />
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Task Board
+              Kanban Board
             </h1>
           </div>
           <button
