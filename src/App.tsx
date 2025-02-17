@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
+import SearchInput from "./components/SearchInput";
 
 function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -39,6 +40,7 @@ function App() {
   const [selectedStatus, setSelectedStatus] = useState<TaskStatus | "all">(
     "all"
   );
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { tasks, addTask, updateTask, moveTask } = useTaskStore();
 
@@ -104,6 +106,7 @@ function App() {
   const handleClearTask = () => {
     setDate(undefined);
     setSelectedStatus("all");
+    setSearchQuery("");
   };
 
   useEffect(() => {
@@ -138,8 +141,16 @@ function App() {
       filtered = filtered.filter((task) => task.status === selectedStatus);
     }
 
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task?.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
     setFilteredTasks(filtered);
-  }, [date, selectedStatus, tasks]);
+  }, [date, selectedStatus, searchQuery, tasks]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -162,6 +173,12 @@ function App() {
 
         <div className="flex flex-col gap-4 mb-8">
           <div className="flex gap-4">
+              <SearchInput
+                name="search"
+                value={searchQuery ? searchQuery : ""}
+                onChange={(value) => setSearchQuery(value)}
+              />
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -225,7 +242,7 @@ function App() {
             </Select>
           </div>
 
-          {date && (
+          {(date || searchQuery?.length !== 0) && (
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>
                 Showing {filteredTasks?.length} of {tasks?.length} tasks
