@@ -14,10 +14,11 @@
 - [State Management] - Zustand
 - [Drag and Drop] - @dnd-kit 
 - [Date Format] - date-fns
-- [validation] - yup
+- [Validation] - yup
+- [Database] - LocalStorage
 
 ## Installation
-Install the dependencies and devDependencies and start the server.
+Install the dependencies and start the server.
 
 ```sh
 npm install (or) npm install --legacy-peer-deps
